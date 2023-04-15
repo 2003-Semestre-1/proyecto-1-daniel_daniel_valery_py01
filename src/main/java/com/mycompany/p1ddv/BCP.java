@@ -12,29 +12,30 @@ import java.util.Stack;
  * @author
  */
 public class BCP {
-    private Estado estado;
-    private int PC;
-    private int[] registros;
+    Estado estado;
+    int PC,AC=0;
+    int[] registros;
     private Stack<Integer> stack;
-    private int CPU;
-    private long tiempoInicio;
-    private long tiempoEmpleado;
+    int CPU;
+    double tiempoInicio;
+    double tiempoEmpleado;
     private List<String> archivos;
     // private Memoria compartida??????????
     private BCP siguienteBCP;
-    private int base;
+    int base;
     private int alcance;
     private int prioridad;
+    Instruction owner;
 
-    public BCP(int base, int alcance) {
+    public BCP(int cpu) {
         estado = Estado.NUEVO;
         registros = new int[] {0,0,0,0};
         stack = new Stack<>();
         tiempoEmpleado = 0;
         siguienteBCP = null;
-        this.base = base;
-        this.alcance = alcance;
+        this.CPU = cpu;
         prioridad = 1;
+        
     }
 
     public Estado getEstado() {
@@ -77,19 +78,19 @@ public class BCP {
         this.CPU = CPU;
     }
 
-    public long getTiempoInicio() {
+    public double getTiempoInicio() {
         return tiempoInicio;
     }
 
-    public void setTiempoInicio(long tiempoInicio) {
+    public void setTiempoInicio(double tiempoInicio) {
         this.tiempoInicio = tiempoInicio;
     }
 
-    public long getTiempoEmpleado() {
+    public double getTiempoEmpleado() {
         return tiempoEmpleado;
     }
 
-    public void setTiempoEmpleado(long tiempoEmpleado) {
+    public void setTiempoEmpleado(double tiempoEmpleado) {
         this.tiempoEmpleado = tiempoEmpleado;
     }
 

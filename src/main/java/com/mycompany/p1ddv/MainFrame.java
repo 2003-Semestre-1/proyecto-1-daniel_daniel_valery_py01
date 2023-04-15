@@ -4,11 +4,24 @@
  */
 package com.mycompany.p1ddv;
 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,19 +31,19 @@ public class MainFrame extends javax.swing.JFrame {
     String fileName;
     int posMemoriaLibre = 11;
             
-    int MAX_MAIN_MEMORY = 256;
+    int espacio_memoria = 256;
     int MAX_DISK_MEMORY = 512;
     int MAX_STACK_SIZE = 10;
     
-    
-    Stack<Integer> stack = new Stack<>();
+   
     ProgramLoader loader = new ProgramLoader();
     
-    Instruction[] memoriaPrincipal = new Instruction[MAX_MAIN_MEMORY];
-    Object[] unidadAlmacenamiento = new Object[MAX_DISK_MEMORY];
+    Instruction[] memoriaPrincipal = new Instruction[espacio_memoria];
     
-    Cpu cpu1 = new Cpu();
-    Cpu cpu2 = new Cpu();  
+    Cpu cpu1 = new Cpu(1);
+    Cpu cpu2 = new Cpu(2);  
+    
+    int PC=11;
 
     /**
      * Creates new form MainFrame
@@ -51,35 +64,59 @@ public class MainFrame extends javax.swing.JFrame {
         ejecutarBtn = new javax.swing.JButton();
         pasoBtn = new javax.swing.JButton();
         limpiarBtn = new javax.swing.JButton();
-        estatsBtn = new javax.swing.JButton();
         cargarBtn = new javax.swing.JButton();
         fileNameLbl = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        procesosTbl = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        cpu1Table = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        cpu2Table = new javax.swing.JTable();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable4 = new javax.swing.JTable();
+        bcpTbl1 = new javax.swing.JTable();
         jScrollPane5 = new javax.swing.JScrollPane();
-        jTable5 = new javax.swing.JTable();
+        bcpTbl2 = new javax.swing.JTable();
         jScrollPane6 = new javax.swing.JScrollPane();
-        jTable6 = new javax.swing.JTable();
+        memTable = new javax.swing.JTable();
         jScrollPane7 = new javax.swing.JScrollPane();
-        jTable7 = new javax.swing.JTable();
+        discoTbl = new javax.swing.JTable();
         jScrollPane8 = new javax.swing.JScrollPane();
         jTable8 = new javax.swing.JTable();
+        configBtn = new javax.swing.JButton();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        logsTbl = new javax.swing.JTable();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        logsTbl1 = new javax.swing.JTable();
+        jScrollPane11 = new javax.swing.JScrollPane();
+        bcpTbl3 = new javax.swing.JTable();
+        jScrollPane12 = new javax.swing.JScrollPane();
+        estatsTbl = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1430, 950));
 
         ejecutarBtn.setText("Ejecutar");
+        ejecutarBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ejecutarBtnActionPerformed(evt);
+            }
+        });
 
         pasoBtn.setText("Paso a paso");
+        pasoBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pasoBtnActionPerformed(evt);
+            }
+        });
 
         limpiarBtn.setText("Limpiar");
-
-        estatsBtn.setText("Estadisticas");
+        limpiarBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                limpiarBtnActionPerformed(evt);
+            }
+        });
 
         cargarBtn.setText("Cargar archivo");
         cargarBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -90,102 +127,108 @@ public class MainFrame extends javax.swing.JFrame {
 
         fileNameLbl.setText("*.asm");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        procesosTbl.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+
             },
             new String [] {
-                "Procesos", "Estados"
+                "Proceso", "Estado"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(1).setHeaderValue("Estados");
+        jScrollPane1.setViewportView(procesosTbl);
+
+        cpu1Table.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        cpu1Table.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "CPU 1"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        cpu1Table.setAutoResizeMode(0);
+        cpu1Table.setCellSelectionEnabled(true);
+        cpu1Table.setShowGrid(true);
+        jScrollPane2.setViewportView(cpu1Table);
+        if (cpu1Table.getColumnModel().getColumnCount() > 0) {
+            cpu1Table.getColumnModel().getColumn(0).setResizable(false);
         }
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        cpu2Table.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        cpu2Table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"P1", null, null, null},
-                {"PX", null, null, null}
-            },
-            new String [] {
-                "CPU 1", "1", "2", "...N"
-            }
-        ));
-        jScrollPane2.setViewportView(jTable2);
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"P1", null, null, null},
-                {"PX", null, null, null}
             },
             new String [] {
-                "CPU 1", "1", "2", "...N"
+                "CPU 2"
             }
-        ));
-        jScrollPane3.setViewportView(jTable3);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false
+            };
 
-        jTable4.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
-            },
-            new String [] {
-                "BPC CPU1"
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
-        ));
-        jScrollPane4.setViewportView(jTable4);
+        });
+        cpu2Table.setAutoResizeMode(0);
+        cpu2Table.setShowGrid(true);
+        jScrollPane3.setViewportView(cpu2Table);
+        if (cpu2Table.getColumnModel().getColumnCount() > 0) {
+            cpu2Table.getColumnModel().getColumn(0).setResizable(false);
+        }
 
-        jTable5.setModel(new javax.swing.table.DefaultTableModel(
+        bcpTbl1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
-            },
-            new String [] {
-                "BPC CPU2"
-            }
-        ));
-        jScrollPane5.setViewportView(jTable5);
 
-        jTable6.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
             },
             new String [] {
-                "Pos", "Memoria"
+                "BCP CPU1"
             }
         ));
-        jScrollPane6.setViewportView(jTable6);
+        jScrollPane4.setViewportView(bcpTbl1);
 
-        jTable7.setModel(new javax.swing.table.DefaultTableModel(
+        bcpTbl2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+
             },
             new String [] {
-                "Pos", "Disco"
+                "BCP CPU2"
             }
         ));
-        jScrollPane7.setViewportView(jTable7);
+        jScrollPane5.setViewportView(bcpTbl2);
+
+        memTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Pos", "Valor en memoria"
+            }
+        ));
+        jScrollPane6.setViewportView(memTable);
+
+        discoTbl.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Pos", "Valor en disco"
+            }
+        ));
+        jScrollPane7.setViewportView(discoTbl);
 
         jTable8.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
+
             },
             new String [] {
                 "Pantalla"
@@ -193,43 +236,120 @@ public class MainFrame extends javax.swing.JFrame {
         ));
         jScrollPane8.setViewportView(jTable8);
 
+        configBtn.setText("Configuracion");
+        configBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configBtnActionPerformed(evt);
+            }
+        });
+
+        logsTbl.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "logs"
+            }
+        ));
+        jScrollPane9.setViewportView(logsTbl);
+
+        logsTbl1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "logs"
+            }
+        ));
+        jScrollPane10.setViewportView(logsTbl1);
+
+        bcpTbl3.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "BCP Ultimo proceso ejecutado"
+            }
+        ));
+        jScrollPane11.setViewportView(bcpTbl3);
+
+        estatsTbl.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Proceso", "Tiempo Inicio", "Tiempo empleado"
+            }
+        ));
+        jScrollPane12.setViewportView(estatsTbl);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel1.setText("Estadisticas");
+
+        jButton1.setText("Estadisticas");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(ejecutarBtn)
-                                .addGap(40, 40, 40)
-                                .addComponent(pasoBtn)))
-                        .addGap(29, 29, 29)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(limpiarBtn)
-                                .addGap(36, 36, 36)
-                                .addComponent(estatsBtn))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                                .addComponent(pasoBtn))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addGap(35, 35, 35)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE)))
-                .addGap(60, 60, 60)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(cargarBtn)
-                        .addGap(31, 31, 31)
-                        .addComponent(fileNameLbl))
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(limpiarBtn)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(115, 115, 115)
+                                .addComponent(cargarBtn))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(fileNameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(configBtn))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(185, 185, 185)
+                                        .addComponent(jLabel1))))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 928, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGap(21, 21, 21)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(51, 51, 51))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -239,25 +359,36 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(ejecutarBtn)
                     .addComponent(pasoBtn)
                     .addComponent(limpiarBtn)
-                    .addComponent(estatsBtn)
                     .addComponent(cargarBtn)
-                    .addComponent(fileNameLbl))
+                    .addComponent(fileNameLbl)
+                    .addComponent(configBtn)
+                    .addComponent(jButton1))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(17, 17, 17))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                            .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                    .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(37, 37, 37)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
+                    .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(82, Short.MAX_VALUE))
         );
 
         pack();
@@ -274,14 +405,199 @@ public class MainFrame extends javax.swing.JFrame {
             fileNameLbl.setText(selectedFile.getAbsolutePath());
             fileName = selectedFile.getAbsolutePath();
             cargarArchivos(fileName);
-            pasoBtn.setEnabled(false);
-//            limpiarElementos();
-//            initValues();
             
         }
     }//GEN-LAST:event_cargarBtnActionPerformed
 
-     public void cargarArchivos(String file){    
+    private void limpiarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarBtnActionPerformed
+        // TODO add your handling code here:
+        limpiar();
+    }//GEN-LAST:event_limpiarBtnActionPerformed
+
+    private void configBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configBtnActionPerformed
+        // TODO add your handling code here:
+        JFrame frame = new JFrame();
+
+        JPanel panel = (JPanel) frame.getContentPane();
+        panel.setLayout(null);
+
+        JLabel label = new JLabel("Espacio de memoria disponible: ");
+        JTextField texto = new JTextField(String.valueOf(memoriaPrincipal.length));
+        JButton actualizar = new JButton("Actualizar memoria");
+        panel.add(texto);
+        panel.add(label);
+        panel.add(actualizar);
+        Dimension size = label.getPreferredSize();
+        label.setBounds(10, 20, size.width, size.height);
+        texto.setBounds(210, 15, size.width-20, size.height+10);
+        actualizar.setBounds(150, 100, size.width, size.height+10);
+        
+        actualizar.addActionListener((ActionEvent e) -> {
+            int nuevaMem = Integer.parseInt(texto.getText());
+            if(nuevaMem < 22){
+                JOptionPane.showMessageDialog(this, "EL nuevo espacio de memoria es muy reducido", "ERROR",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            actualizarMemoriaP(nuevaMem);  
+        }); 
+        
+        frame.setSize(500, 200);
+        frame.setVisible(true);
+    }//GEN-LAST:event_configBtnActionPerformed
+
+    private void pasoBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pasoBtnActionPerformed
+        try {
+            ejecutarProcesoPasoApaso();
+        } catch (Exception ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_pasoBtnActionPerformed
+
+    private void ejecutarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ejecutarBtnActionPerformed
+        try {
+            // TODO add your handling code here:
+            ejecutarProcesoAut();
+        } catch (Exception ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_ejecutarBtnActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        cargarEstadisticas();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    
+    public void ejecutarProcesoPasoApaso() throws Exception{
+        // cargar BCP
+        Instruction proceso = memoriaPrincipal[PC];
+        PC+=1;  
+        BCP bcp = proceso.bcp;
+
+        cpu1.fetch(bcp);
+        cpu2.fetch(bcp);
+        
+        // execute
+        cpu1.execute(bcp);
+        cpu2.execute(bcp);
+        
+        // cargar BCPs GUI
+        cargarBCPs(proceso);
+        cargarBCPsCPUs(proceso.bcp.CPU);
+        cargarLogs();
+        refreshTablaProcesos();  
+        
+    }
+    
+      public void ejecutarProcesoAut() throws Exception{
+        // cargar BCP
+        while(memoriaPrincipal[PC] != null){
+            Instruction proceso = memoriaPrincipal[PC];
+            PC+=1;  
+            BCP bcp = proceso.bcp;
+
+            // fetch
+            cpu1.fetch(bcp);
+            cpu2.fetch(bcp);
+
+            // execute
+            cpu1.execute(bcp);
+            cpu2.execute(bcp);
+
+            // cargar BCPs GUI
+            cargarBCPs(proceso);
+            cargarBCPsCPUs(proceso.bcp.CPU);
+            cargarLogs();
+            refreshTablaProcesos();
+        }
+
+    }
+    
+    public void cargarBCPs(Instruction proceso){
+        BCP bcpProc = proceso.bcp;
+        DefaultTableModel  model = (DefaultTableModel) bcpTbl3.getModel();   
+        model.setRowCount(0);
+        Object[] estado = {"Estado: " + String.valueOf(bcpProc.estado)};
+        Object[] pc = {"PC: " + String.valueOf(bcpProc.PC)};
+        Object[] ac = {"AC: " + String.valueOf(bcpProc.AC)};
+        Object[] ax = {"AX: " + String.valueOf(bcpProc.getRegistros()[0])};
+        Object[] bx = {"BX: " + String.valueOf(bcpProc.getRegistros()[1])};
+        Object[] cx = {"DX: " + String.valueOf(bcpProc.getRegistros()[2])};
+        Object[] dx = {"CX: " + String.valueOf(bcpProc.getRegistros()[3])};
+        Object[] base = {"Base: " + String.valueOf(bcpProc.getBase())};
+        Object[] alcance = {"Alcance: " + String.valueOf(bcpProc.getAlcance())};
+        Object[] prioridad = {"Prioridad: " + String.valueOf(bcpProc.getPrioridad())};
+        
+        model.addRow(estado);
+        model.addRow(pc);
+        model.addRow(ac);
+        model.addRow(ax);
+        model.addRow(bx);
+        model.addRow(dx);
+        model.addRow(cx);
+        model.addRow(base);
+        model.addRow(alcance);
+        model.addRow(prioridad);
+    }
+    
+    public void cargarBCPsCPUs(int cpu){
+        if(cpu==1){
+            DefaultTableModel  model = (DefaultTableModel) bcpTbl1.getModel();   
+            model.setRowCount(0);
+            Object[] pc = {"PC: " + String.valueOf(cpu1.PC)};
+            Object[] ac = {"AC: " + String.valueOf(cpu1.AC)};
+            Object[] ax = {"AX: " + String.valueOf(cpu1.getRegistros()[0])};
+            Object[] bx = {"BX: " + String.valueOf(cpu1.getRegistros()[1])};
+            Object[] cx = {"DX: " + String.valueOf(cpu1.getRegistros()[2])};
+            Object[] dx = {"CX: " + String.valueOf(cpu1.getRegistros()[3])};
+            model.addRow(pc);
+            model.addRow(ac);
+            model.addRow(ax);
+            model.addRow(bx);
+            model.addRow(dx);
+            model.addRow(cx);
+        }
+        else{
+            DefaultTableModel  model1 = (DefaultTableModel) bcpTbl2.getModel();   
+            model1.setRowCount(0);
+            Object[] pc1 = {"PC: " + String.valueOf(cpu2.PC)};
+            Object[] ac1 = {"AC: " + String.valueOf(cpu2.AC)};
+            Object[] ax1 = {"AX: " + String.valueOf(cpu2.getRegistros()[0])};
+            Object[] bx1 = {"BX: " + String.valueOf(cpu2.getRegistros()[1])};
+            Object[] cx1 = {"DX: " + String.valueOf(cpu2.getRegistros()[2])};
+            Object[] dx1 = {"CX: " + String.valueOf(cpu2.getRegistros()[3])};
+            model1.addRow(pc1);
+            model1.addRow(ac1);
+            model1.addRow(ax1);
+            model1.addRow(bx1);
+            model1.addRow(dx1);
+            model1.addRow(cx1);
+        }
+ 
+    }
+    
+    public void cargarLogs(){
+        DefaultTableModel logs = (DefaultTableModel) logsTbl.getModel();
+        logs.setRowCount(0);
+        for(String logM: cpu1.mensajes){
+            Object[] log = {logM};
+            logs.addRow(log);
+        }
+        DefaultTableModel logs1 = (DefaultTableModel) logsTbl1.getModel();
+        logs1.setRowCount(0);
+        for(String logM: cpu2.mensajes){        
+            Object[] log = {logM};
+            logs1.addRow(log);
+        }
+        
+        
+        
+
+    }
+    
+    
+    // Carga los archivos y los convierte en las instrucciones a ejecutar 
+    public void cargarArchivos(String file){    
         try {
             loader.loadProgram(file);
         } catch (Exception e) {
@@ -290,21 +606,196 @@ public class MainFrame extends javax.swing.JFrame {
         }
 
         List<Instruction> instrucciones = loader.instrucciones;
+        if(instrucciones.size()+11 > memoriaPrincipal.length){
+            JOptionPane.showMessageDialog(this, "Memoria insuficiente", "ERROR",JOptionPane.ERROR_MESSAGE);
+            loader = new ProgramLoader();
+            return;
+        }
         int j = 0;
-        for(int i=posMemoriaLibre; i<254; i++){
+        for(int i=posMemoriaLibre; i<espacio_memoria; i++){
              if(j >= instrucciones.size()){
                 posMemoriaLibre = i;
                 break;
              }
-            memoriaPrincipal[i] = instrucciones.get(j);
+            Instruction instruccion = instrucciones.get(j);
+            instruccion.bcp.setAlcance(i);
+            instruccion.bcp.setBase(i);
+            instruccion.bcp.tiempoInicio = i-11;
+            instruccion.bcp.PC = i;
+            memoriaPrincipal[i] = instruccion;
             j++;
         }
-    cpu1.setMemoria(memoriaPrincipal);
-    cpu2.setMemoria(memoriaPrincipal);
-    
+        cpu1.setMemoria(memoriaPrincipal);
+        cpu2.setMemoria(memoriaPrincipal);
+        actualizarTablaProcesos();
          
     }
     
+    public void cargarEstadisticas(){
+        int corrimiento = 11;
+        int numProceso = 0;
+        
+        DefaultTableModel estats = (DefaultTableModel) estatsTbl.getModel();
+        
+        estats.setRowCount(0);
+        
+        for(int i=numProceso; i+corrimiento < posMemoriaLibre; i++){
+            Object[] tiempos = {"P"+String.valueOf(i),String.valueOf(memoriaPrincipal[i+corrimiento].bcp.tiempoInicio),String.valueOf(memoriaPrincipal[i+corrimiento].bcp.tiempoEmpleado)};
+            estats.addRow(tiempos);
+            numProceso++;
+        }
+    }
+    
+    public void refreshTablaProcesos() {
+        int corrimiento = 11;
+        
+        int numProceso = 0;
+        DefaultTableModel model = (DefaultTableModel) procesosTbl.getModel();
+        DefaultTableModel cpu1Tbl = (DefaultTableModel) cpu1Table.getModel();
+        DefaultTableModel cpu2Tbl = (DefaultTableModel) cpu2Table.getModel();
+        DefaultTableModel memtbl = (DefaultTableModel) memTable.getModel();
+        DefaultTableModel discoTb = (DefaultTableModel) discoTbl.getModel();
+        
+        model.setRowCount(0);
+        cpu1Tbl.setRowCount(0);
+        cpu1Tbl.setColumnCount(1);
+        cpu2Tbl.setRowCount(0);
+        cpu2Tbl.setColumnCount(1);
+        memtbl.setRowCount(0);
+        discoTb.setRowCount(0);
+        int procEscribir1=0;
+        int procEscribir2=0;
+        for(int i=numProceso; i+corrimiento < posMemoriaLibre; i++){
+            Object[] proceso = {String.valueOf(i),String.valueOf(memoriaPrincipal[i+corrimiento].bcp.estado)};
+            model.addRow(proceso);
+            Object[] instrucASM = {String.valueOf(i),getInstruccionASM(memoriaPrincipal[i+corrimiento])};
+            memtbl.addRow(instrucASM);
+            discoTb.addRow(instrucASM);
+            // Cargar tablas CPU
+            Object[] numProc = {"P"+String.valueOf(i)};
+            // CPU 1
+            if(memoriaPrincipal[i+corrimiento].bcp.CPU == 1){
+                cpu1Tbl.addRow(numProc);
+                cpu1Tbl.addColumn(String.valueOf(i));
+                if(memoriaPrincipal[i+corrimiento].bcp.estado == Estado.FINALIZADO){
+                    cpu1Tbl.setValueAt("XXXXXXXXX",procEscribir1 ,procEscribir1+1 );
+                    procEscribir1++;
+                }              
+            }
+            else{
+                cpu2Tbl.addRow(numProc);
+                cpu2Tbl.addColumn(String.valueOf(i));
+                if(memoriaPrincipal[i+corrimiento].bcp.estado == Estado.FINALIZADO){
+                    cpu2Tbl.setValueAt("XXXXXXXXX",procEscribir2 ,procEscribir2+1 );
+                    procEscribir2++;
+                }
+            }
+
+            numProceso++;
+        }
+
+
+     }
+    
+     
+     public void actualizarTablaProcesos() {
+         int corrimiento = 11;
+         
+        int numProceso = 0;
+        DefaultTableModel model = (DefaultTableModel) procesosTbl.getModel();
+        DefaultTableModel cpu1Tbl = (DefaultTableModel) cpu1Table.getModel();
+        DefaultTableModel cpu2Tbl = (DefaultTableModel) cpu2Table.getModel();
+        DefaultTableModel memtbl = (DefaultTableModel) memTable.getModel();
+        DefaultTableModel discoTb = (DefaultTableModel) discoTbl.getModel();
+        
+        for(int i=numProceso; i+corrimiento <= posMemoriaLibre-1; i++){
+            Object[] proceso = {String.valueOf(numProceso),String.valueOf(memoriaPrincipal[i+corrimiento].bcp.estado)};
+            model.addRow(proceso);
+            Object[] instrucASM = {String.valueOf(numProceso),getInstruccionASM(memoriaPrincipal[i+corrimiento])};
+            memtbl.addRow(instrucASM);
+            discoTb.addRow(instrucASM);
+            // Cargar tablas CPU
+            Object[] numProc = {"P"+String.valueOf(numProceso)};
+            // CPU 1
+            if(memoriaPrincipal[i+corrimiento].bcp.CPU == 1){
+                cpu1Tbl.addRow(numProc);
+                cpu1Tbl.addColumn(String.valueOf(numProceso));
+            }
+            else{
+                cpu2Tbl.addRow(numProc);
+                cpu2Tbl.addColumn(String.valueOf(numProceso));
+            }
+
+            numProceso++;
+        }
+
+
+     }
+     
+     
+     public String getInstruccionASM(Instruction instruc){
+         String res="";
+         int lenArgumentos = instruc.token.argumentos.length;
+         switch(lenArgumentos){
+            case 0 -> res = instruc.token.instruc;
+            case 1 -> res = instruc.token.instruc + " " + instruc.token.argumentos[0];
+            case 2 -> res = instruc.token.instruc + " " + instruc.token.argumentos[0]+ " "  + instruc.token.argumentos[1];
+            case 3 -> res = instruc.token.instruc + " " + instruc.token.argumentos[0] + " " + instruc.token.argumentos[1] + " " + instruc.token.argumentos[2];
+                 
+         }
+         return res;
+     }
+     
+     public void limpiar(){
+        memoriaPrincipal = new Instruction[256];
+
+        cpu1 = new Cpu(1);
+        cpu2 = new Cpu(2);  
+
+        posMemoriaLibre = 11;
+        PC=11;
+        
+        DefaultTableModel model = (DefaultTableModel) procesosTbl.getModel();
+        DefaultTableModel cpu1Tbl = (DefaultTableModel) cpu1Table.getModel();
+        DefaultTableModel cpu2Tbl = (DefaultTableModel) cpu2Table.getModel();
+        DefaultTableModel memtbl = (DefaultTableModel) memTable.getModel();
+        DefaultTableModel bcp1 = (DefaultTableModel) bcpTbl1.getModel();
+        DefaultTableModel bcp2 = (DefaultTableModel) bcpTbl2.getModel();
+        DefaultTableModel bcp3 = (DefaultTableModel) bcpTbl3.getModel();
+        DefaultTableModel logs1 = (DefaultTableModel) logsTbl.getModel();
+        DefaultTableModel logs2 = (DefaultTableModel) logsTbl1.getModel();
+        DefaultTableModel estats = (DefaultTableModel) estatsTbl.getModel();
+        DefaultTableModel disco = (DefaultTableModel) discoTbl.getModel();
+        
+        estats.setRowCount(0);
+        disco.setRowCount(0);
+        model.setRowCount(0);
+        cpu1Tbl.setRowCount(0);
+        cpu1Tbl.setColumnCount(1);
+        cpu2Tbl.setRowCount(0);
+        cpu2Tbl.setColumnCount(1);
+        memtbl.setRowCount(0);
+        bcp1.setRowCount(0);
+        bcp2.setRowCount(0);
+        bcp3.setRowCount(0);
+        logs1.setRowCount(0);
+        logs2.setRowCount(0);
+        JOptionPane.showMessageDialog(this, "Sistema limpio: Todos los valores volvieron a su configuración inicial", "Info",JOptionPane.INFORMATION_MESSAGE);
+        
+     }
+     
+    public void actualizarMemoriaP(int nuevaMemoria){
+        if(memoriaPrincipal[11] != null){
+            JOptionPane.showMessageDialog(this, "Memoria en uso", "ERROR",JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "Memeria actualizada a: "+ String.valueOf(nuevaMemoria) +"KB", "Info",JOptionPane.INFORMATION_MESSAGE);
+            memoriaPrincipal = new Instruction[nuevaMemoria];
+        }
+        this.espacio_memoria = nuevaMemoria;
+    }
+     
+     
     /**
      * @param args the command line arguments
      */
@@ -341,11 +832,23 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable bcpTbl1;
+    private javax.swing.JTable bcpTbl2;
+    private javax.swing.JTable bcpTbl3;
     private javax.swing.JButton cargarBtn;
+    private javax.swing.JButton configBtn;
+    private javax.swing.JTable cpu1Table;
+    private javax.swing.JTable cpu2Table;
+    private javax.swing.JTable discoTbl;
     private javax.swing.JButton ejecutarBtn;
-    private javax.swing.JButton estatsBtn;
+    private javax.swing.JTable estatsTbl;
     private javax.swing.JLabel fileNameLbl;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
+    private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -353,15 +856,13 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
-    private javax.swing.JTable jTable4;
-    private javax.swing.JTable jTable5;
-    private javax.swing.JTable jTable6;
-    private javax.swing.JTable jTable7;
+    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTable jTable8;
     private javax.swing.JButton limpiarBtn;
+    private javax.swing.JTable logsTbl;
+    private javax.swing.JTable logsTbl1;
+    private javax.swing.JTable memTable;
     private javax.swing.JButton pasoBtn;
+    private javax.swing.JTable procesosTbl;
     // End of variables declaration//GEN-END:variables
 }

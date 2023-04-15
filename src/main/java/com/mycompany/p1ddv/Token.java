@@ -9,8 +9,8 @@ package com.mycompany.p1ddv;
  * @author aloji
  */
 public class Token {
-    private String instruc;
-    private String[] argumentos;
+    String instruc;
+    String[] argumentos;
 
     public Token(String instruc, String[] argumentos) {
         this.instruc = instruc;

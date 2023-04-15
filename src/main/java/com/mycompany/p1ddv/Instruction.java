@@ -11,8 +11,10 @@ import java.util.List;
  * @author 
  */
 public class Instruction {
-    private int instruc;
-    private List<Integer> argumentos;
+    int instruc;
+    List<Integer> argumentos;
+    Token token;
+    BCP bcp;
 
     public Instruction(int instruc, List<Integer> argumentos) {
         this.instruc = instruc;
@@ -26,5 +28,6 @@ public class Instruction {
     public List<Integer> getArgumentos() {
         return argumentos;
     }
+    
     
 }

@@ -7,6 +7,7 @@ package com.mycompany.p1ddv;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -20,15 +21,19 @@ public class Parser {
      * 
      * @param tokens lista conteniendo los tokens generados en el procesamiento
      * lexico
+     * @param cpu
      * @return Una lista con las instrucciones del programa procesado.
      * @throws IOException
      * @throws Exception 
      */
-    public List<Instruction> parse(List<Token> tokens) throws Exception{
+    public List<Instruction> parse(List<Token> tokens, int cpu) throws Exception{
         List<Instruction> instrucs = new ArrayList<>();
-        
+        Instruction instruc;
         for (Token token : tokens){
-            instrucs.add(getInstruccion(token));
+            instruc = getInstruccion(token);
+            instruc.token = token;
+            instruc.bcp = new BCP(cpu);
+            instrucs.add(instruc);
         }
         
         return instrucs;

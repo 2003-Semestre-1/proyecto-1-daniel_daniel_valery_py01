@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -21,15 +22,18 @@ public class ProgramLoader {
         //this.instruction= new Instruction();
     }
     
-    public BCP loadProgram(String fileName) throws Exception{
+    public void loadProgram(String fileName) throws Exception{
         if(!fileName.endsWith(".asm")){
             throw new Exception("Input file has to be .asm");
         }
         try {
             List<String> programLines =  Files.readAllLines(
-                    Paths.get(fileName));
+            Paths.get(fileName));
             List<Token> tokens = lexer.tokenize(programLines);
-            instrucciones = parser.parse(tokens);
+            Random rand = new Random();
+            int cpu = rand.nextInt(1,3);
+            instrucciones = parser.parse(tokens, cpu);
+            
             
             /*
             TODO Agregar almacenamiento de las instrucciónes y el procesamiento
@@ -37,15 +41,15 @@ public class ProgramLoader {
             */
             
             /* FIXME fix base value to actual value */
-            int base = 0;
-            
-            BCP bcp = new BCP(base, instrucciones.size());
+//            int base = 0;
+//            
+//            BCP bcp = new BCP(base, instrucciones.size());
             /*
             TODO Asignar al bcp información faltante como CPU asignado
             Entre otros
             */
             
-            return bcp;
+//            return bcp;
         } catch (IOException ex) {
             throw new Exception("Error reading file");
         }
